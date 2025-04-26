@@ -1,6 +1,6 @@
 python-dotenv
 gspread
-aiogram
+aiogram==2.25.2
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
