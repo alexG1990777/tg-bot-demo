@@ -1,8 +1,7 @@
-aiogram==2.25.1
 python-dotenv
 gspread
-gspread_dataframe
-oauth2client
-gspread
+aiogram
 google-auth
-
+google-auth-oauthlib
+google-auth-httplib2
+oauth2client
