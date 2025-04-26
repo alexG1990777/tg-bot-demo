@@ -3,7 +3,7 @@ from aiogram import Bot, Dispatcher, executor, types
 from dotenv import load_dotenv
 
 load_dotenv()
-API_TOKEN = "123456789:ABCdefGHIjk-LMNopqrsTUVwxyZ"
+API_TOKEN = "7559810534:AAEvz_UK8m1G7_4xsF8iLCzDiqrozSeXLFw"
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
