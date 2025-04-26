@@ -1,0 +1,8 @@
+aiogram==2.25.1
+python-dotenv
+gspread
+gspread_dataframe
+oauth2client
+gspread
+google-auth
+
