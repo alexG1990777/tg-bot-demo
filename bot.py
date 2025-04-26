@@ -1,29 +1,28 @@
 import os
-from aiogram import Bot, Dispatcher, executor, types
-from dotenv import load_dotenv
 import gspread
-from google.oauth2.service_account import Credentials
+from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from google.oauth2.service_account import Credentials
 
-load_dotenv()
-API_TOKEN = "7559810534:AAEvz_UK8m1G7_4xsF8iLCzDiqrozSeXLFw"
-
-
-bot = Bot(token=API_TOKEN)
-storage = MemoryStorage()
-dp = Dispatcher(bot, storage=storage)
-
-# Google Sheets авторизация
+# --- Google Sheets Авторизация ---
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-SERVICE_ACCOUNT_FILE = 'credentials.json'
+SERVICE_ACCOUNT_FILE = 'credentials.json'  # Файл должен быть в репозитории!
 credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 gc = gspread.authorize(credentials)
+
 SPREADSHEET_ID = '1hIxfnL-HlJ097v2zFWhvfsFN-eJ4-tCNwONh8t-HNAA'
 SHEET_NAME = 'Лист1'
 worksheet = gc.open_by_key(SPREADSHEET_ID).worksheet(SHEET_NAME)
 
+# --- Telegram Bot ---
+API_TOKEN = os.environ.get('API_TOKEN')
+bot = Bot(token=API_TOKEN)
+storage = MemoryStorage()
+dp = Dispatcher(bot, storage=storage)
+
+# --- Меню ---
 menu_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
 menu_keyboard.add("🔎 Поиск по заявителю", "🔎 Поиск по номеру заявки")
 
@@ -32,6 +31,7 @@ class SearchStates(StatesGroup):
     waiting_for_number = State()
 
 def format_request(row):
+    # row: 0-ФИО, 1-№, 2-дата заявки, 3-дата закрытия, 4-исполнитель, 5-категория, 6-статус, 7-пусто, 8-описание, 9-вложения
     return (
         f"Заявка\n"
         f"от {row[0]}\n"
@@ -89,7 +89,8 @@ async def process_search_number(message: types.Message, state: FSMContext):
 @dp.message_handler()
 async def write_to_sheet(message: types.Message):
     try:
-        worksheet.append_row([str(message.from_user.id), message.from_user.full_name, message.text])
+        # Можно доработать, если требуется иной формат добавления данных
+        worksheet.append_row([str(message.from_user.full_name), '', '', '', '', '', '', '', message.text, ''])
         await message.reply("Сообщение записано в Google Sheets!", reply_markup=menu_keyboard)
     except Exception as e:
         await message.reply(f"Ошибка при записи в Google Sheets: {e}", reply_markup=menu_keyboard)
