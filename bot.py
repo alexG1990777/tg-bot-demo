@@ -94,11 +94,9 @@ async def write_to_sheet(message: types.Message):
         await message.reply(f"Ошибка при записи в Google Sheets: {e}", reply_markup=menu_keyboard)
 
 if __name__ == '__main__':
-    # Здесь добавляем запуск на нужном порту
-    from aiogram import executor
+    # Запуск приложения на порту, указанный в переменной окружения (или 5000 по умолчанию)
     from aiohttp import web
 
-    # Ваш код может быть таким:
-    port = int(os.environ.get('PORT', 5000))  # 5000 это значение по умолчанию
+    port = int(os.environ.get('PORT', 5000))  # 5000 - это значение по умолчанию
     web.run_app(dp, port=port)
     executor.start_polling(dp, skip_updates=True)
