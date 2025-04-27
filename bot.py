@@ -1,10 +1,13 @@
-from aiogram import Bot, Dispatcher, executor, types
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
 import os
-from google.oauth2.service_account import Credentials
 import gspread
+from aiogram import Bot, Dispatcher, types
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.types import ParseMode
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from google.oauth2.service_account import Credentials
+from aiohttp import web
+import logging
 
 # --- Google Sheets Авторизация ---
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -17,7 +20,7 @@ SHEET_NAME = 'Лист1'
 worksheet = gc.open_by_key(SPREADSHEET_ID).worksheet(SHEET_NAME)
 
 # --- Telegram Bot ---
-API_TOKEN = os.environ.get('API_TOKEN')
+API_TOKEN = os.environ.get('API_TOKEN')  # Получаем токен из переменной окружения
 bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
@@ -88,10 +91,34 @@ async def process_search_number(message: types.Message, state: FSMContext):
 @dp.message_handler()
 async def write_to_sheet(message: types.Message):
     try:
-        worksheet.append_row([str(message.from_user.full_name), '', '', '', '', '', '', "", message.text, ''])
+        worksheet.append_row([str(message.from_user.full_name), '', '', '', '', '', '', '', message.text, ''])
         await message.reply("Сообщение записано в Google Sheets!", reply_markup=menu_keyboard)
     except Exception as e:
         await message.reply(f"Ошибка при записи в Google Sheets: {e}", reply_markup=menu_keyboard)
 
+# --- Webhook настройки ---
+
+async def on_start(request):
+    return web.Response(text="Bot is working")
+
+async def on_get_updates(request):
+    # Ваш код обработки обновлений здесь
+    return web.Response(status=200)
+
+# Устанавливаем webhook URL
+webhook_url = 'https://<your-domain>/webhook'  # Замените на ваш URL
+
+# Подключаем webhook
+app = web.Application()
+app.router.add_post('/webhook', on_get_updates)
+
+# Запуск веб-сервера
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+    # Ставим webhook для Telegram
+    bot.set_webhook(webhook_url)
+
+    # Запускаем сервер
+    web.run_app(app, host='0.0.0.0', port=8080)  # на порт 8080 (или другой, если нужно)
+
+    # Если вы хотите использовать polling (не рекомендую для продакшн):
+    # executor.start_polling(dp, skip_updates=True)
