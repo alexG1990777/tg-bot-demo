@@ -3,10 +3,8 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 import os
 from google.oauth2.service_account import Credentials
 import gspread
-from aiogram.utils import executor
-from aiogram import Bot
-from aiogram.dispatcher.filters.state import State, StatesGroup  # Для состояния
-from aiogram.dispatcher import FSMContext  # Добавлено для FSMContext
+from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters.state import State, StatesGroup
 
 # --- Google Sheets Авторизация ---
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -28,7 +26,7 @@ dp = Dispatcher(bot, storage=storage)
 menu_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
 menu_keyboard.add("🔎 Поиск по заявителю", "🔎 Поиск по номеру заявки")
 
-class SearchStates(StatesGroup):  # Наследование от StatesGroup
+class SearchStates(StatesGroup):
     waiting_for_applicant = State()
     waiting_for_number = State()
 
@@ -90,15 +88,10 @@ async def process_search_number(message: types.Message, state: FSMContext):
 @dp.message_handler()
 async def write_to_sheet(message: types.Message):
     try:
-        worksheet.append_row([str(message.from_user.full_name), '', '', '', '', '', '', '', message.text, ''])
+        worksheet.append_row([str(message.from_user.full_name), '', '', '', '', '', '', "", message.text, ''])
         await message.reply("Сообщение записано в Google Sheets!", reply_markup=menu_keyboard)
     except Exception as e:
         await message.reply(f"Ошибка при записи в Google Sheets: {e}", reply_markup=menu_keyboard)
 
 if __name__ == '__main__':
-    # Запуск приложения на порту, указанный в переменной окружения (или 5000 по умолчанию)
-    from aiohttp import web
-
-    port = int(os.environ.get('PORT', 5000))  # 5000 - это значение по умолчанию
-    web.run_app(dp, port=port)
     executor.start_polling(dp, skip_updates=True)
