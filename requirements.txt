@@ -1,8 +1,7 @@
-# Основные зависимости для вашего проекта
-aiogram==3.0.0  # Используем последнюю стабильную версию aiogram для Python 3.8+
-pydantic>=2.0,<3  # Совместимая версия pydantic, которая будет работать с aiogram 3.x
-aiohttp==3.8.5  # Версия aiohttp для работы с запросами HTTP
-requests==2.32.3  # Версия для работы с HTTP запросами
-gspread==5.1.1  # Для работы с Google Sheets
-google-auth==2.11.3  # Для работы с Google API
-google-auth-oauthlib==0.5.3  # Для аутентификации через OAuth
+aiogram==3.0.0
+pydantic>=2.0,<3
+aiohttp==3.8.5
+requests==2.32.3
+gspread==5.1.1
+google-auth==2.9.0  # Эта версия совместима с остальными библиотеками
+google-auth-oauthlib==0.5.3
