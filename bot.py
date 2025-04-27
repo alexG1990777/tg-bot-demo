@@ -1,7 +1,7 @@
 from aiogram import Bot, Dispatcher, types
-from aiogram.dispatcher import FSMContext  # Импортируем FSMContext из основной библиотеки
-from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.fsm.storage.memory import MemoryStorage  # Новый способ работы с памятью
+from aiogram.fsm.context import FSMContext  # Новый импорт
+from aiogram.fsm.state import State, StatesGroup  # Новый импорт
+from aiogram.contrib.fsm_storage.memory import MemoryStorage  # Новый способ работы с памятью
 import os
 from google.oauth2.service_account import Credentials
 import gspread
@@ -26,6 +26,7 @@ dp = Dispatcher(bot, storage=storage)
 menu_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
 menu_keyboard.add("🔎 Поиск по заявителю", "🔎 Поиск по номеру заявки")
 
+# --- Состояния ---
 class SearchStates(StatesGroup):
     waiting_for_applicant = State()
     waiting_for_number = State()
@@ -94,10 +95,4 @@ async def write_to_sheet(message: types.Message):
         await message.reply(f"Ошибка при записи в Google Sheets: {e}", reply_markup=menu_keyboard)
 
 if __name__ == '__main__':
-    from aiogram import executor
-    from aiohttp import web
-
-    # Ваш код может быть таким:
-    port = int(os.environ.get('PORT', 5000))  # 5000 это значение по умолчанию
-    web.run_app(dp, port=port)
     executor.start_polling(dp, skip_updates=True)
