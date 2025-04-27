@@ -5,7 +5,8 @@ from google.oauth2.service_account import Credentials
 import gspread
 from aiogram.utils import executor
 from aiogram import Bot
-from aiogram.dispatcher.filters.state import State, StatesGroup  # Добавлен импорт
+from aiogram.dispatcher.filters.state import State, StatesGroup  # Для состояния
+from aiogram.dispatcher import FSMContext  # Добавлено для FSMContext
 
 # --- Google Sheets Авторизация ---
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
