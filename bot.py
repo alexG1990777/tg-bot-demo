@@ -5,6 +5,7 @@ from google.oauth2.service_account import Credentials
 import gspread
 from aiogram.utils import executor
 from aiogram import Bot
+from aiogram.dispatcher.filters.state import State, StatesGroup  # Добавлен импорт
 
 # --- Google Sheets Авторизация ---
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -26,7 +27,7 @@ dp = Dispatcher(bot, storage=storage)
 menu_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
 menu_keyboard.add("🔎 Поиск по заявителю", "🔎 Поиск по номеру заявки")
 
-class SearchStates(StatesGroup):
+class SearchStates(StatesGroup):  # Наследование от StatesGroup
     waiting_for_applicant = State()
     waiting_for_number = State()
 
